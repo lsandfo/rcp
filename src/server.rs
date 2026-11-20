@@ -20,19 +20,21 @@ impl Server {
 
     // listen wartet bis eine connection statt gefunden hat und nimmt den 
     // inhalt der Datei an. 
-    pub fn listen(&mut self) {
+    pub fn listen(&mut self) -> Result<(), Box<dyn std::error::Error>> {
         //let mut buf_name = String::new();
         let mut buf_data: Vec<u8> = Vec::new();
-        let mut client = self.listener.incoming().next().unwrap().unwrap();
+        let mut client = self.listener.incoming().next().unwrap()?;
         //client.read_to_string(&mut buf_name).unwrap();
         //self.data_name = Some(buf_name);
         client.read_to_end(&mut buf_data).unwrap();
         self.data = Some(buf_data);
+        Ok(())
     }
 
     // Speichert self.data in SAVEFIEL
-    pub fn save(&mut self) {
-        write(SAVEFILE, self.data.clone().unwrap()).expect("Can't save received file!");
+    pub fn save(&mut self) -> Result<(), std::io::Error> {
+        write(SAVEFILE, self.data.clone().unwrap())?;
+        Ok(())
     }
 }
 
@@ -45,12 +47,12 @@ use super::*;
     #[test]
     fn test_lister() {
         let mut test_server = Server::new().unwrap();
-        test_server.listen();
+        test_server.listen().unwrap();
         assert_eq!(
             "Hello World",
             String::from_utf8(test_server.data.clone().unwrap()).unwrap()
         );
-        test_server.save();
+        test_server.save().unwrap();
         assert_eq!("Hello World", read_to_string(SAVEFILE).unwrap());
         std::fs::remove_file(SAVEFILE).unwrap();
     }
