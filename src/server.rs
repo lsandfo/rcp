@@ -18,8 +18,8 @@ impl Server {
         })
     }
 
-    // listen wartet bis eine connection statt gefunden hat und nimmt den 
-    // inhalt der Datei an. 
+    // listen wartet bis eine connection statt gefunden hat und nimmt den
+    // inhalt der Datei an.
     pub fn listen(&mut self) -> Result<(), Box<dyn std::error::Error>> {
         //let mut buf_name = String::new();
         let mut buf_data: Vec<u8> = Vec::new();
@@ -41,8 +41,8 @@ impl Server {
 #[cfg(test)]
 mod testing {
 
-use std::fs::read_to_string;
-use super::*;
+    use super::*;
+    use std::fs::read_to_string;
 
     #[test]
     fn test_lister() {
