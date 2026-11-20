@@ -9,7 +9,7 @@ pub struct Client {
 }
 
 impl Client {
-    // new nimmt aktuell den path zu dem zu versendenen File, liest es als u8 und speichert es im data Feld 
+    // new nimmt die Ziel IP, den path zu dem zu versendenen File, liest es als u8 und speichert es im data Feld 
     pub fn new(
         ip: String, /*, data_name: String*/
         file: &str,
