@@ -1,19 +1,18 @@
 use std::fs::write;
 use std::{io::Read, net};
 
-static SAVEFILE: &str = "received";
 pub struct Server {
     listener: net::TcpListener,
-    //data_name: Option<String>,
+    data_name: Option<String>,
     data: Option<Vec<u8>>,
 }
 
 impl Server {
     // Aktuell startet new gleich das binding auf den Port 9080 auf 0.0.0.0
-    pub fn new() -> Result<Server, Box<dyn std::error::Error>> {
+    pub fn new(dn: String) -> Result<Server, Box<dyn std::error::Error>> {
         Ok(Server {
             listener: net::TcpListener::bind("0.0.0.0:9080")?,
-            //data_name: None,
+            data_name: Some(dn),
             data: None,
         })
     }
@@ -33,7 +32,7 @@ impl Server {
 
     // Speichert self.data in SAVEFIEL
     pub fn save(&mut self) -> Result<(), std::io::Error> {
-        write(SAVEFILE, self.data.clone().unwrap())?;
+        write(self.data_name.clone().unwrap(), self.data.clone().unwrap())?;
         Ok(())
     }
 }
@@ -44,9 +43,10 @@ mod testing {
     use super::*;
     use std::fs::read_to_string;
 
+    static SAVEFILE: &str = "received";
     #[test]
     fn test_lister() {
-        let mut test_server = Server::new().unwrap();
+        let mut test_server = Server::new(SAVEFILE.to_string()).unwrap();
         test_server.listen().unwrap();
         assert_eq!(
             "Hello World",
