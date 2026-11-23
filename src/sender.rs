@@ -33,7 +33,7 @@ mod testing {
 
     #[test]
     fn test_send() {
-        fs::write("testfile.txt".to_string(), "Hello World".as_bytes()).unwrap();
+        fs::write("testfile.txt", "Hello World".as_bytes()).unwrap();
         let mut client = Client::new("localhost".to_string(), "testfile.txt").unwrap();
         client.send();
         fs::remove_file("testfile.txt").unwrap();
