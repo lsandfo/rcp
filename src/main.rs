@@ -1,5 +1,5 @@
-use rcp::sender;
 use rcp::listener;
+use rcp::sender;
 use std::fs;
 
 use std::env;
@@ -32,7 +32,6 @@ fn main() {
     } else if args.len() == 2 && args[1] == "-v" {
         let version: &str = env!("CARGO_PKG_VERSION");
         println!("rcp Version: {version}");
-
     } else if args.len() >= 3 {
         let target_ip: String = args[1].clone(); //expect("Ziel Ip als erstes Argument benötigt");
         let data_file: String = args[2].clone(); //expect("Zeildatei als 2tes Argument benötigt");
