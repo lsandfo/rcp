@@ -2,28 +2,24 @@ use std::fs;
 use std::io::Write;
 use std::net;
 
+/// Client contains the listener, which contains a connection to the target, as TCPStream and the file to send in the data field as `Vec<u8>`
 pub struct Client {
     pub listener: net::TcpStream,
     //data_name: Option<String>,
     data: Option<Vec<u8>>,
 }
-
+/// new takes the target IP and path to the file to be sended. It reads the file as `Vec<u8>` in the data field.
+/// It als creates a new connectio to the target and failed to create a Instance if the connection failed.
 impl Client {
-    // new nimmt die Ziel IP, den path zu dem zu versendenen File, liest es als u8 und speichert es im data Feld
-    pub fn new(
-        ip: String, /*, data_name: String*/
-        file: &str,
-    ) -> Result<Client, Box<dyn std::error::Error>> {
+    pub fn new(ip: String, file: &str) -> Result<Client, Box<dyn std::error::Error>> {
         Ok(Client {
             listener: net::TcpStream::connect(format!("{ip}:9080"))?,
             data: Some(fs::read(file)?),
-            //data_name: Some(data_name),
         })
     }
 
-    // send versucht das data feld in einem rutsch in den Socket zu schreiben
+    /// send try to send the `data` field to the target.
     pub fn send(&mut self) {
-        //self.listener.write_all(self.data_name.clone().unwrap().as_bytes()).unwrap();
         self.listener
             .write_all(self.data.clone().unwrap().as_ref())
             .unwrap();

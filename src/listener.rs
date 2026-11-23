@@ -8,7 +8,8 @@ pub struct Server {
 }
 
 impl Server {
-    // Aktuell startet new gleich das binding auf den Port 9080 auf 0.0.0.0
+    /// new retruned a new Server Instance, which acts as listener to receive data.
+    /// It tages the name of the to recevied file as argument and bind itself to Port `0.0.0.0:9080` via TCP.
     pub fn new(dn: String) -> Result<Server, Box<dyn std::error::Error>> {
         Ok(Server {
             listener: net::TcpListener::bind("0.0.0.0:9080")?,
@@ -17,20 +18,17 @@ impl Server {
         })
     }
 
-    // listen wartet bis eine connection statt gefunden hat und nimmt den
-    // inhalt der Datei an.
+    /// listen start's the TCP listener and wait for a new connection.
+    /// It will read everything the client will given and save it in the `data` field.
     pub fn listen(&mut self) -> Result<(), Box<dyn std::error::Error>> {
-        //let mut buf_name = String::new();
         let mut buf_data: Vec<u8> = Vec::new();
         let mut client = self.listener.incoming().next().unwrap()?;
-        //client.read_to_string(&mut buf_name).unwrap();
-        //self.data_name = Some(buf_name);
         client.read_to_end(&mut buf_data).unwrap();
         self.data = Some(buf_data);
         Ok(())
     }
 
-    // Speichert self.data in SAVEFIEL
+    /// save will save the connent of the `data` field in a file named by `data_name` field.
     pub fn save(&mut self) -> Result<(), std::io::Error> {
         write(self.data_name.clone().unwrap(), self.data.clone().unwrap())?;
         Ok(())
