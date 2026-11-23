@@ -15,19 +15,19 @@ fn main() {
         let listener = listener::Server::new(args[1].to_string());
         match listener {
             Ok(mut server) => {
-                println!("Warte auf Verbindung...");
-                server.listen().expect("Fehler beim empfangen der Daten!");
-                println!("Datei empfangen!");
-                server.save().expect("Date konnte nicht gespeichert werden");
-                println!("Datei gespeichert");
+                println!("Wait for connection...");
+                server.listen().expect("Error while receive data!");
+                println!("Data received!");
+                server.save().expect("Data can't saved to File!");
+                println!("Data saved to file successfully");
             }
             Err(srv_err) => {
-                println!("Listener konnte nicht gestartet werden!\n{srv_err}");
+                println!("Can't start listener!\n{srv_err}");
                 exit(1);
             }
         }
     } else if args.len() == 2 && args[1] == "-h" {
-        println!("Sende Modus: IP/FQDN Dateipfad\nDateiname: Empfänger Modus");
+        println!("Send Mode: IP/FQDN Filepath\nFilename: Listener Mode");
         exit(1);
     } else if args.len() == 2 && args[1] == "-v" {
         let version: &str = env!("CARGO_PKG_VERSION");
@@ -36,14 +36,14 @@ fn main() {
         let target_ip: String = args[1].clone(); //expect("Ziel Ip als erstes Argument benötigt");
         let data_file: String = args[2].clone(); //expect("Zeildatei als 2tes Argument benötigt");
         if fs::exists(&data_file).unwrap() {
-            println!("Verbinde zum Ziel...");
+            println!("Connect to Listener...");
             let mut sender = sender::Client::new(target_ip, data_file.as_str())
-                .expect("Ziel System nicht erreichbar!");
-            println!("Sende Datei...");
+                .expect("Target System not reachable!");
+            println!("Send Data...");
             sender.send();
-            println!("Datei erfolgreich gesendet!");
+            println!("Data sended successfully!");
         } else {
-            println!("Zieldatei '{data_file}' nicht gefunden!");
+            println!("Target File '{data_file}' not found!");
             exit(1);
         }
     }
