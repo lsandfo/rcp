@@ -19,19 +19,18 @@ impl Client {
         })
     }
 
-    /// send try to send the `data` field to the target.
-    pub fn send(&mut self) {
+    /// send try to send the `data` field to the target, returning an Result wiht empty Ok or the Error.
+    pub fn send(&mut self) -> Result<(), Box<dyn std::error::Error>> {
         let name = self.data_name.clone().unwrap();
-        let name_size = u32::try_from(name.len()).unwrap();
-        self.listener.write_all(&name_size.to_be_bytes()).unwrap();
+        let name_size = u32::try_from(name.len())?;
+        self.listener.write_all(&name_size.to_be_bytes())?;
         self.listener
-            .write(self.data_name.clone().unwrap().as_bytes())
-            .unwrap();
+            .write_all(self.data_name.clone().unwrap().as_bytes())?;
 
         self.listener
-            .write_all(self.data.clone().unwrap().as_ref())
-            .unwrap();
+            .write_all(self.data.clone().unwrap().as_ref())?;
         self.listener.flush().expect("Can't send all data.");
+        Ok(())
     }
 }
 
@@ -49,6 +48,6 @@ mod testing {
             String::from_utf8(client.data.clone().unwrap()).unwrap()
         );
         fs::remove_file("testfile.txt").unwrap();
-        client.send();
+        client.send().unwrap();
     }
 }

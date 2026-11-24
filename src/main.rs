@@ -40,7 +40,7 @@ fn main() {
             let mut sender = sender::Client::new(target_ip, data_file.as_str())
                 .expect("Target System not reachable!");
             println!("Send Data...");
-            sender.send();
+            sender.send().unwrap();
             println!("Data sended successfully!");
         } else {
             println!("Target File '{data_file}' not found!");

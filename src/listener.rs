@@ -19,18 +19,19 @@ impl Server {
     }
 
     /// listen start's the TCP listener and wait for a new connection.
-    /// It will read everything the client will given and save it in the `data` field.
+    /// It will read the first 8 bytes to get the lenght of the file name, read the founded bytes in the `data_name` field
+    /// and then read the rest of the stream, as file, in the `data` field.
     pub fn listen(&mut self) -> Result<(), Box<dyn std::error::Error>> {
         let mut buf_data: Vec<u8> = Vec::new();
         let mut client = self.listener.incoming().next().unwrap()?;
         let mut size_buf = [0u8; 4];
-        client.read_exact(&mut size_buf).unwrap();
+        client.read_exact(&mut size_buf)?;
         let name_len = u32::from_be_bytes(size_buf) as usize;
         let mut name_buf = vec![0u8; name_len];
-        client.read_exact(&mut name_buf).unwrap();
-        client.read_to_end(&mut buf_data).unwrap();
+        client.read_exact(&mut name_buf)?;
+        client.read_to_end(&mut buf_data)?;
         self.data = Some(buf_data);
-        self.data_name = Some(String::from_utf8(name_buf).unwrap());
+        self.data_name = Some(String::from_utf8(name_buf)?);
         Ok(())
     }
 

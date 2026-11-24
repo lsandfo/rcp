@@ -10,7 +10,7 @@
 //! |Mode |Usage |
 //! |- |- |
 //! |Sender | Give as Argument the target IP and the lokal File to send it to the target |
-//! |Listener | Wait for a Sender to Connect to and Save the file in the current Directory, named by the given first Argument |
+//! |Listener | Wait for a Sender to Connect to and Save the file in the current Directory |
 //!
 //!
 
