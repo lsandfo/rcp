@@ -10,10 +10,10 @@ pub struct Server {
 impl Server {
     /// new retruned a new Server Instance, which acts as listener to receive data.
     /// It tages the name of the to recevied file as argument and bind itself to Port `0.0.0.0:9080` via TCP.
-    pub fn new(dn: String) -> Result<Server, Box<dyn std::error::Error>> {
+    pub fn new() -> Result<Server, Box<dyn std::error::Error>> {
         Ok(Server {
             listener: net::TcpListener::bind("0.0.0.0:9080")?,
-            data_name: Some(dn),
+            data_name: None,
             data: None,
         })
     }
@@ -23,8 +23,14 @@ impl Server {
     pub fn listen(&mut self) -> Result<(), Box<dyn std::error::Error>> {
         let mut buf_data: Vec<u8> = Vec::new();
         let mut client = self.listener.incoming().next().unwrap()?;
+        let mut size_buf = [0u8; 4];
+        client.read_exact(&mut size_buf).unwrap();
+        let name_len = u32::from_be_bytes(size_buf) as usize;
+        let mut name_buf = vec![0u8; name_len];
+        client.read_exact(&mut name_buf).unwrap();
         client.read_to_end(&mut buf_data).unwrap();
         self.data = Some(buf_data);
+        self.data_name = Some(String::from_utf8(name_buf).unwrap());
         Ok(())
     }
 
@@ -39,19 +45,19 @@ impl Server {
 mod testing {
 
     use super::*;
-    use std::fs::read_to_string;
+    use std::fs::{read_to_string, remove_file};
 
-    static SAVEFILE: &str = "received";
     #[test]
     fn test_lister() {
-        let mut test_server = Server::new(SAVEFILE.to_string()).unwrap();
+        let mut test_server = Server::new().unwrap();
         test_server.listen().unwrap();
         assert_eq!(
             "Hello World",
             String::from_utf8(test_server.data.clone().unwrap()).unwrap()
         );
+        assert_eq!("testfile.txt", test_server.data_name.clone().unwrap());
         test_server.save().unwrap();
-        assert_eq!("Hello World", read_to_string(SAVEFILE).unwrap());
-        std::fs::remove_file(SAVEFILE).unwrap();
+        assert_eq!("Hello World", read_to_string("testfile.txt").unwrap());
+        remove_file("testfile.txt").unwrap();
     }
 }

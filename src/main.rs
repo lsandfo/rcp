@@ -11,8 +11,8 @@ use std::process::exit;
 // You can call the help with the "-h" flag.
 fn main() {
     let args: Vec<String> = env::args().collect();
-    if args.len() == 2 && !args[1].starts_with('-') {
-        let listener = listener::Server::new(args[1].to_string());
+    if args.len() == 1 {
+        let listener = listener::Server::new();
         match listener {
             Ok(mut server) => {
                 println!("Wait for connection...");
